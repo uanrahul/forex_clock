@@ -5,10 +5,10 @@
   <title>Forex Clock IST – Custom</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="shortcut icon" href="/favicon.ico" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-<link rel="manifest" href="/site.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
   <style>
     body {
       background: #0e0e0e;
@@ -123,6 +123,21 @@
       const sessionContainer = document.getElementById("sessions");
       sessionContainer.innerHTML = "";
 
+      // Forex weekend closure logic
+      const day = now.getDay(); // 0 = Sunday, 6 = Saturday
+      const marketClosed = (day === 6) || (day === 0 && currentHour < 3.5); // Saturday or early Sunday
+
+      if (marketClosed) {
+        sessionContainer.innerHTML = `
+          <div class="session closed">
+            <strong>Market Closed</strong><br>
+            Forex market is currently closed for the weekend.
+          </div>
+        `;
+        document.getElementById("countdown").textContent = `🔒 Market will reopen Monday 3:30 AM IST`;
+        return;
+      }
+
       let nextSession = null, minDiff = Infinity;
 
       sessions.forEach(session => {
@@ -154,7 +169,7 @@
 
         sessionContainer.appendChild(div);
 
-        // Countdown + notify
+        // Countdown and notify
         let sessionStartHour = session.open;
         if (currentHour > session.open) sessionStartHour += 24;
         const diffSeconds = (sessionStartHour - currentHour) * 3600;
