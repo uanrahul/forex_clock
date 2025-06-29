@@ -4,11 +4,14 @@
   <meta charset="UTF-8" />
   <title>Forex Clock IST – Custom</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <link rel="shortcut icon" href="/favicon.ico" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <link rel="manifest" href="/site.webmanifest" />
+  
+  <!-- ✅ Fixed Favicon Paths (relative, no leading slashes) -->
+  <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+  <link rel="manifest" href="site.webmanifest" />
+
   <style>
     body {
       background: #0e0e0e;
@@ -123,9 +126,12 @@
       const sessionContainer = document.getElementById("sessions");
       sessionContainer.innerHTML = "";
 
-      // Forex weekend closure logic
+      // ✅ Correct weekend closure logic
       const day = now.getDay(); // 0 = Sunday, 6 = Saturday
-      const marketClosed = (day === 6) || (day === 0 && currentHour < 3.5); // Saturday or early Sunday
+      const marketClosed =
+        (day === 6 && currentHour >= 3.5) || // Saturday after 3:30 AM
+        (day === 0) ||                     // Full Sunday
+        (day === 1 && currentHour < 3.5);  // Monday before 3:30 AM
 
       if (marketClosed) {
         sessionContainer.innerHTML = `
