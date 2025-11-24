@@ -1,238 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Forex Clock IST – Custom</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <!-- ✅ Fixed Favicon Paths (relative, no leading slashes) -->
-  <link rel="icon" href="favicon.ico" />
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <link rel="shortcut icon" href="favicon.ico" />
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
-  <link rel="manifest" href="site.webmanifest" />
-<!-- 💡 DARK MODE CONFIGURATION FOR ALL PLATFORMS -->
-<!-- Favicons (already in your folder) -->
-<link rel="icon" href="favicon.ico">
-<link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Forex Sessions</title>
+    <!-- ✅ Fixed Favicon Paths (relative, no leading slashes) -->
+    <link rel="icon" href="favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+    <link rel="manifest" href="site.webmanifest" />
+    <!-- 💡 DARK MODE CONFIGURATION FOR ALL PLATFORMS -->
+    <!-- Favicons (already in your folder) -->
+    <link rel="icon" href="favicon.ico" />
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
 
-<!-- Web App Manifest -->
-<link rel="manifest" href="site.webmanifest" />
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="site.webmanifest" />
 
-<!-- ✅ Enforce Dark Theme on All Browsers -->
-<meta name="theme-color" content="#0e0e0e" />
+    <!-- ✅ Enforce Dark Theme on All Browsers -->
+    <meta name="theme-color" content="#0e0e0e" />
 
-<!-- ✅ Force Mobile & iOS to Dark UI -->
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="mobile-web-app-capable" content="yes" />
+    <!-- ✅ Force Mobile & iOS to Dark UI -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="mobile-web-app-capable" content="yes" />
 
-<!-- ✅ Windows Start Menu & Taskbar (Edge/Windows) -->
-<meta name="msapplication-TileColor" content="#0e0e0e" />
-<meta name="msapplication-navbutton-color" content="#0e0e0e" />
+    <!-- ✅ Windows Start Menu & Taskbar (Edge/Windows) -->
+    <meta name="msapplication-TileColor" content="#0e0e0e" />
+    <meta name="msapplication-navbutton-color" content="#0e0e0e" />
 
-<!-- Optional but clean -->
-<meta name="application-name" content="Forex Clock" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Optional but clean -->
+    <meta name="application-name" content="Forex Clock" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@300;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="background-gradient"></div>
 
-  <style>
-    body {
-      background: #0e0e0e;
-      color: #ffffff;
-      font-family: 'Segoe UI', sans-serif;
-      text-align: center;
-      padding: 2em;
-    }
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 0.5em;
-    }
-    #clock {
-      font-size: 1.5rem;
-      margin-bottom: 1em;
-    }
-    .session {
-      padding: 1.2em;
-      margin: 1em auto;
-      max-width: 600px;
-      border-radius: 12px;
-      border: 2px solid #333;
-      background-color: #1a1a1a;
-      position: relative;
-    }
-    .open {
-      border-color: #00ff99;
-    }
-    .closed {
-      opacity: 0.5;
-    }
-    .live-indicator {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background: #ff0033;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      animation: blink 1s infinite;
-    }
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
-    .pairs {
-      margin-top: 0.5em;
-      font-size: 0.95rem;
-      color: #ccc;
-    }
-    #countdown {
-      margin-top: 2em;
-      font-size: 1.2rem;
-      color: #00ff99;
-    }
-  </style>
-</head>
-<body>
-  <h1>🕒 Forex Market Clock (IST)</h1>
-  <div id="clock">Loading IST...</div>
-  <div id="sessions"></div>
-  <div id="countdown">Calculating next session...</div>
-
-  <script>
-    const yourPairs = ["XAUUSD", "GBPUSD", "EURUSD", "USDJPY", "BTCUSD"];
-
-    const sessions = [
-      { name: "Sydney", open: 3.5, close: 12.5, allPairs: [] },
-      { name: "Tokyo", open: 5.5, close: 14.5, allPairs: ["USDJPY"] },
-      { name: "London", open: 12.5, close: 21.5, allPairs: ["GBPUSD", "EURUSD", "XAUUSD"] },
-      { name: "New York", open: 18.5, close: 27.5, allPairs: ["XAUUSD", "GBPUSD", "EURUSD", "USDJPY", "BTCUSD"] }
-    ];
-
-    let lastOpened = {}, notified = {};
-
-    function getISTTime() {
-      const now = new Date();
-      const utc = now.getTime() + now.getTimezoneOffset() * 60000;
-      return new Date(utc + 5.5 * 3600000);
-    }
-
-    function formatTime(date) {
-      return date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-    }
-
-    function toHM(decimalHour) {
-      const hrs = Math.floor(decimalHour) % 24;
-      const mins = Math.round((decimalHour - Math.floor(decimalHour)) * 60);
-      const suffix = hrs >= 12 ? "PM" : "AM";
-      const hour12 = hrs % 12 === 0 ? 12 : hrs % 12;
-      return `${hour12}:${mins.toString().padStart(2, '0')} ${suffix}`;
-    }
-
-    function notify(message) {
-      if (Notification.permission === "granted") {
-        new Notification(message);
-      }
-    }
-
-    async function requestNotificationPermission() {
-      if ("Notification" in window && Notification.permission !== "granted") {
-        await Notification.requestPermission();
-      }
-    }
-
-    function renderSessions() {
-      const now = getISTTime();
-      const currentHour = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
-      document.getElementById("clock").textContent = `Current IST Time: ${formatTime(now)}`;
-
-      const sessionContainer = document.getElementById("sessions");
-      sessionContainer.innerHTML = "";
-
-      // ✅ Correct weekend closure logic
-      const day = now.getDay(); // 0 = Sunday, 6 = Saturday
-      const marketClosed =
-        (day === 6 && currentHour >= 3.5) || // Saturday after 3:30 AM
-        (day === 0) ||                     // Full Sunday
-        (day === 1 && currentHour < 3.5);  // Monday before 3:30 AM
-
-      if (marketClosed) {
-        sessionContainer.innerHTML = `
-          <div class="session closed">
-            <strong>Market Closed</strong><br>
-            Forex market is currently closed for the weekend.
+    <div class="app-container">
+      <header>
+        <div class="header-content">
+          <h1>Forex Sessions</h1>
+          <div class="toggle-container">
+            <input
+              type="checkbox"
+              id="timezone-toggle"
+              class="toggle-checkbox"
+            />
+            <label for="timezone-toggle" class="toggle-btn">
+              <span class="toggle-option" data-value="IST">IST</span>
+              <span class="toggle-option" data-value="UTC">UTC</span>
+              <div class="toggle-slider"></div>
+            </label>
           </div>
-        `;
-        document.getElementById("countdown").textContent = `🔒 Market will reopen Monday 3:30 AM IST`;
-        return;
-      }
+        </div>
+      </header>
 
-      let nextSession = null, minDiff = Infinity;
+      <main>
+        <section class="status-section">
+          <div class="status-card glass-panel">
+            <h2>Current Market Status</h2>
+            <div id="market-status" class="status-indicator">
+              <span class="status-dot"></span>
+              <span class="status-text">Loading...</span>
+            </div>
+            <div id="active-sessions" class="active-sessions-text">
+              <!-- Active sessions will be listed here -->
+            </div>
+          </div>
 
-      sessions.forEach(session => {
-        const relevantPairs = session.allPairs.filter(p => yourPairs.includes(p));
-        let isOpen = false;
-        if (session.close > 24) {
-          isOpen = currentHour >= session.open || currentHour < (session.close - 24);
-        } else {
-          isOpen = currentHour >= session.open && currentHour < session.close;
-        }
+          <div class="indian-clock-card glass-panel">
+            <h2>New Delhi (IST)</h2>
+            <div class="clock-display large">
+              <div class="analog-clock" id="clock-india">
+                <div class="hand hour-hand"></div>
+                <div class="hand minute-hand"></div>
+                <div class="hand second-hand"></div>
+                <div class="center-dot"></div>
+                <div class="clock-markers"></div>
+              </div>
+              <div class="digital-time" id="time-india">--:--:--</div>
+              <div class="date-display" id="date-india">--</div>
+            </div>
+          </div>
+        </section>
 
-        if (isOpen && !lastOpened[session.name]) lastOpened[session.name] = true;
-        if (!isOpen) lastOpened[session.name] = false;
+        <section class="sessions-grid">
+          <!-- Sydney -->
+          <div class="session-card glass-panel" id="card-sydney">
+            <div class="card-header">
+              <h3>Sydney</h3>
+              <span class="session-badge">Session</span>
+            </div>
+            <div class="clock-display">
+              <div class="analog-clock" id="clock-sydney">
+                <div class="hand hour-hand"></div>
+                <div class="hand minute-hand"></div>
+                <div class="hand second-hand"></div>
+                <div class="center-dot"></div>
+                <div class="clock-markers"></div>
+              </div>
+              <div class="digital-time" id="time-sydney">--:--</div>
+            </div>
+          </div>
 
-        const div = document.createElement("div");
-        div.className = `session ${isOpen ? "open" : "closed"}`;
-        div.innerHTML = `
-          <strong>${session.name}</strong><br>
-          ${toHM(session.open)} – ${toHM(session.close)}<br>
-          <div class="pairs">Best Pairs: ${relevantPairs.length ? relevantPairs.join(", ") : "None"}</div>
-        `;
+          <!-- Tokyo -->
+          <div class="session-card glass-panel" id="card-tokyo">
+            <div class="card-header">
+              <h3>Tokyo</h3>
+              <span class="session-badge">Session</span>
+            </div>
+            <div class="clock-display">
+              <div class="analog-clock" id="clock-tokyo">
+                <div class="hand hour-hand"></div>
+                <div class="hand minute-hand"></div>
+                <div class="hand second-hand"></div>
+                <div class="center-dot"></div>
+                <div class="clock-markers"></div>
+              </div>
+              <div class="digital-time" id="time-tokyo">--:--</div>
+            </div>
+          </div>
 
-        if (isOpen) {
-          const live = document.createElement("div");
-          live.className = "live-indicator";
-          live.textContent = "LIVE";
-          div.appendChild(live);
-        }
+          <!-- London -->
+          <div class="session-card glass-panel" id="card-london">
+            <div class="card-header">
+              <h3>London</h3>
+              <span class="session-badge">Session</span>
+            </div>
+            <div class="clock-display">
+              <div class="analog-clock" id="clock-london">
+                <div class="hand hour-hand"></div>
+                <div class="hand minute-hand"></div>
+                <div class="hand second-hand"></div>
+                <div class="center-dot"></div>
+                <div class="clock-markers"></div>
+              </div>
+              <div class="digital-time" id="time-london">--:--</div>
+            </div>
+          </div>
 
-        sessionContainer.appendChild(div);
+          <!-- New York -->
+          <div class="session-card glass-panel" id="card-newyork">
+            <div class="card-header">
+              <h3>New York</h3>
+              <span class="session-badge">Session</span>
+            </div>
+            <div class="clock-display">
+              <div class="analog-clock" id="clock-newyork">
+                <div class="hand hour-hand"></div>
+                <div class="hand minute-hand"></div>
+                <div class="hand second-hand"></div>
+                <div class="center-dot"></div>
+                <div class="clock-markers"></div>
+              </div>
+              <div class="digital-time" id="time-newyork">--:--</div>
+            </div>
+          </div>
+        </section>
 
-        // Countdown and notify
-        let sessionStartHour = session.open;
-        if (currentHour > session.open) sessionStartHour += 24;
-        const diffSeconds = (sessionStartHour - currentHour) * 3600;
-        if (diffSeconds > 0 && diffSeconds < minDiff) {
-          minDiff = diffSeconds;
-          nextSession = session;
-        }
+        <!-- Market Assets Section -->
+        <section class="assets-section">
+          <div class="section-header">
+            <h2>Market Assets & Trading Hours</h2>
+            <p class="section-subtitle">
+              High-volume assets from major global markets
+            </p>
+          </div>
 
-        const sessionKey = session.name;
-        if (!notified[sessionKey]) notified[sessionKey] = {};
+          <div class="assets-grid" id="assets-grid">
+            <!-- Assets will be dynamically generated by JavaScript -->
+          </div>
+        </section>
 
-        [600, 300, 60].forEach(sec => {
-          if (Math.floor(diffSeconds) === sec && !notified[sessionKey][sec]) {
-            notify(`📈 ${session.name} session starts in ${sec / 60} minutes.`);
-            notified[sessionKey][sec] = true;
-          }
-        });
-      });
+        <!-- Alarm Section -->
+        <section class="alarm-section">
+          <div class="alarm-card glass-panel">
+            <div class="alarm-header">
+              <h2>⏰ Session Alarms</h2>
+              <p class="alarm-subtitle">
+                Set alarms for forex sessions or custom times
+              </p>
+            </div>
 
-      if (nextSession) {
-        const hrs = Math.floor(minDiff / 3600);
-        const mins = Math.floor((minDiff % 3600) / 60);
-        const secs = Math.floor(minDiff % 60);
-        document.getElementById("countdown").textContent = `🕑 Next: ${nextSession.name} in ${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-      } else {
-        document.getElementById("countdown").textContent = `🎉 All sessions currently closed.`;
-      }
-    }
+            <!-- Quick Session Buttons -->
+            <div class="quick-alarms">
+              <h3>Quick Session Alarms</h3>
+              <div class="session-buttons">
+                <button class="session-alarm-btn" data-session="sydney">
+                  <span class="btn-label">Sydney</span>
+                  <span class="btn-time" id="sydney-time">--:-- IST</span>
+                </button>
+                <button class="session-alarm-btn" data-session="tokyo">
+                  <span class="btn-label">Tokyo</span>
+                  <span class="btn-time" id="tokyo-time">--:-- IST</span>
+                </button>
+                <button class="session-alarm-btn" data-session="london">
+                  <span class="btn-label">London</span>
+                  <span class="btn-time" id="london-time">--:-- IST</span>
+                </button>
+                <button class="session-alarm-btn" data-session="newyork">
+                  <span class="btn-label">New York</span>
+                  <span class="btn-time" id="newyork-time">--:-- IST</span>
+                </button>
+                <button class="session-alarm-btn" data-session="india">
+                  <span class="btn-label">India</span>
+                  <span class="btn-time" id="india-time">--:-- IST</span>
+                </button>
+              </div>
+            </div>
 
-    setInterval(renderSessions, 1000);
-    renderSessions();
-    requestNotificationPermission();
-  </script>
-</body>
+            <!-- Custom Alarm -->
+            <div class="custom-alarm">
+              <h3>Custom Alarm</h3>
+              <div class="custom-alarm-inputs">
+                <div class="time-input-group">
+                  <label for="alarm-hour">Hour</label>
+                  <select id="alarm-hour" class="time-select">
+                    <option value="">--</option>
+                  </select>
+                </div>
+                <div class="time-separator">:</div>
+                <div class="time-input-group">
+                  <label for="alarm-minute">Minute</label>
+                  <select id="alarm-minute" class="time-select">
+                    <option value="">--</option>
+                  </select>
+                </div>
+                <div class="time-input-group">
+                  <label for="alarm-period">Period</label>
+                  <select id="alarm-period" class="time-select">
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+                <button id="set-custom-alarm" class="set-alarm-btn">
+                  <span>Set Alarm</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Active Alarms List -->
+            <div class="active-alarms" id="active-alarms">
+              <h3>Active Alarms</h3>
+              <div class="alarms-list" id="alarms-list">
+                <p class="no-alarms">No active alarms</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
 </html>
