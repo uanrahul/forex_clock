@@ -1,0 +1,984 @@
+:root {
+    --bg-color: #0f172a;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --accent-color: #38bdf8;
+    --glass-bg: rgba(30, 41, 59, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    --active-session-color: #4ade80;
+    --inactive-session-color: #64748b;
+    --clock-face: #1e293b;
+    --clock-marker: #cbd5e1;
+    --hand-color: #e2e8f0;
+    --second-hand: #f43f5e;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.background-gradient {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.15), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.15), transparent 25%);
+    z-index: -1;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 2rem;
+}
+
+header {
+    margin-bottom: 3rem;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(to right, #38bdf8, #818cf8);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Toggle Switch */
+.toggle-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-checkbox {
+    display: none;
+}
+
+.toggle-btn {
+    display: flex;
+    position: relative;
+    background-color: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 9999px;
+    padding: 4px;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    width: 160px;
+    height: 48px;
+    transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(15, 23, 42, 0.8);
+}
+
+.toggle-option {
+    flex: 1;
+    text-align: center;
+    z-index: 2;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.5px;
+}
+
+.toggle-slider {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: calc(50% - 4px);
+    height: calc(100% - 8px);
+    background: linear-gradient(135deg, var(--accent-color), #3b82f6);
+    border-radius: 9999px;
+    transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    z-index: 1;
+    box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
+}
+
+/* Checked State Logic */
+.toggle-checkbox:checked+.toggle-btn .toggle-slider {
+    transform: translateX(100%);
+}
+
+.toggle-checkbox:not(:checked)+.toggle-btn .toggle-option[data-value="IST"] {
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-checkbox:checked+.toggle-btn .toggle-option[data-value="UTC"] {
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Glass Panel */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-panel:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Status Section */
+.status-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.status-card,
+.indian-clock-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 200px;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1rem 0;
+    padding: 0.5rem 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 2rem;
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--inactive-session-color);
+    box-shadow: 0 0 10px var(--inactive-session-color);
+    transition: all 0.3s ease;
+}
+
+.status-dot.active {
+    background-color: var(--active-session-color);
+    box-shadow: 0 0 15px var(--active-session-color);
+}
+
+.status-dot.closed {
+    background-color: #f43f5e;
+    box-shadow: 0 0 15px #f43f5e;
+}
+
+.status-text {
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+
+.status-section h2 {
+    margin-bottom: 20px;
+}
+
+.active-sessions-text {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-top: 0.5rem;
+    height: 1.5rem;
+}
+
+/* Clocks */
+.sessions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem;
+}
+
+.session-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+}
+
+.card-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.card-header h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.session-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+}
+
+.session-card.active .session-badge {
+    background: rgba(74, 222, 128, 0.2);
+    color: var(--active-session-color);
+    border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+
+.clock-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.analog-clock {
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    background: var(--clock-face);
+    border: 6px solid #334155;
+    position: relative;
+    box-shadow: inset 0 0 22px rgba(0, 0, 0, 0.55);
+}
+
+.large .analog-clock {
+    width: 220px;
+    height: 220px;
+    border: 8px solid #334155;
+}
+
+.center-dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12px;
+    height: 12px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.55);
+}
+
+/* Slightly larger center dot for large clocks */
+.large .center-dot {
+    width: 14px;
+    height: 14px;
+}
+
+.hand {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    transform-origin: bottom center;
+    background: var(--hand-color);
+    border-radius: 4px;
+    z-index: 5;
+}
+
+.hour-hand {
+    width: 4px;
+    height: 25%;
+    background: var(--text-primary);
+    transition: transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.minute-hand {
+    width: 3px;
+    height: 35%;
+    background: var(--text-secondary);
+    transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.second-hand {
+    width: 2px;
+    height: 40%;
+    background: var(--second-hand);
+    z-index: 6;
+    transition: transform 1s linear;
+}
+
+.clock-markers {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+/* Date shown inside the analog clock (mid-right) */
+.analog-clock .in-clock-date {
+    position: absolute;
+    right: -3%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--text-primary);
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 3px 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.3);
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.8), inset -1px -1px 2px rgba(255, 255, 255, 0.1);
+
+    pointer-events: none;
+    z-index: 2;
+    backdrop-filter: blur(2px);
+}
+
+/* Slightly larger rectangle for the main large clock */
+.large .analog-clock .in-clock-date {
+    font-size: 0.8rem;
+    height: 24px;
+    color: var(--text-primary);
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+/* Hide the digital time text inside small session cards per request */
+.session-card .digital-time {
+    display: none;
+}
+
+/* JS Generated Markers Styles */
+.marker-line {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: 100%;
+    transform-origin: center;
+    margin-left: -1px;
+    pointer-events: none;
+}
+
+.marker-line::before,
+.marker-line::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 12px;
+    background: var(--clock-marker);
+}
+
+.marker-line::before {
+    top: 0;
+}
+
+.marker-line::after {
+    bottom: 0;
+}
+
+/* Highlight 12, 3, 6, 9 markers */
+.marker-line.cardinal-marker::before,
+.marker-line.cardinal-marker::after {
+    background: var(--accent-color);
+    box-shadow: 0 0 5px var(--accent-color);
+    width: 100%;
+    height: 14px;
+}
+
+.analog-clock::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 88%;
+    height: 88%;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.03);
+}
+
+.digital-time {
+    font-family: 'Inter', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+.large .digital-time {
+    font-size: 2rem;
+    margin-top: 0.5rem;
+}
+
+.date-display {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Market Assets Section */
+.assets-section {
+    margin-top: 4rem;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.section-header h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(to right, #38bdf8, #818cf8);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-top: 0;
+}
+
+.assets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.market-container {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.market-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.market-container.market-open, .session-card.active {
+    border-color: #4ade804d;
+    background: rgb(0 0 0 / 25%);
+}
+
+.market-container.market-closed {
+    border-color: rgba(100, 116, 139, 0.3);
+}
+
+.market-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.market-header h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.market-status-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.9rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.market-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--inactive-session-color);
+    box-shadow: 0 0 10px var(--inactive-session-color);
+    transition: all 0.3s ease;
+    animation: pulse 2s infinite;
+}
+
+.market-status-dot.open {
+    background-color: var(--active-session-color);
+    box-shadow: 0 0 15px var(--active-session-color);
+    animation: pulse-active 2s infinite;
+}
+
+.market-status-dot.closed {
+    background-color: #64748b;
+    box-shadow: 0 0 8px #64748b;
+    animation: none;
+}
+
+@keyframes pulse-active {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1);
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 0.9;
+    }
+}
+
+.market-status-text {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+}
+
+.market-hours {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.8rem;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.hours-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+.hours-time {
+    font-size: 1.05rem;
+    color: var(--accent-color);
+    font-weight: 600;
+    font-family: 'Inter', monospace;
+}
+
+.assets-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.asset-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 0.8rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.asset-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateX(5px);
+}
+
+.asset-item.index {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(129, 140, 248, 0.1) 100%);
+    border-color: rgba(56, 189, 248, 0.2);
+}
+
+.asset-item.index:hover {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(129, 140, 248, 0.15) 100%);
+    border-color: rgba(56, 189, 248, 0.3);
+}
+
+.asset-symbol {
+    font-family: 'Inter', monospace;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--accent-color);
+    letter-spacing: 0.5px;
+}
+
+.asset-name {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-align: right;
+    flex: 1;
+    margin-left: 1rem;
+}
+
+.market-open .asset-item {
+    opacity: 1;
+}
+
+.market-closed .asset-item {
+    opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+    .status-section {
+        grid-template-columns: 1fr;
+    }
+
+    .header-content {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .assets-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .asset-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+    }
+
+    .asset-name {
+        text-align: left;
+        margin-left: 0;
+    }
+}
+
+/* Alarm Section */
+.alarm-section {
+    margin: 5rem 0 3rem 0;
+}
+
+.alarm-card {
+    max-width: 100%;
+}
+
+.alarm-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.alarm-header h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(to right, #38bdf8, #818cf8);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+.alarm-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+.quick-alarms,
+.custom-alarm,
+.active-alarms {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.active-alarms {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.quick-alarms h3,
+.custom-alarm h3,
+.active-alarms h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.session-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+}
+
+.session-alarm-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.8rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-primary);
+    font-family: 'Outfit', sans-serif;
+}
+
+.session-alarm-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(56, 189, 248, 0.2);
+}
+
+.session-alarm-btn.active {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(129, 140, 248, 0.2));
+    border-color: var(--accent-color);
+    box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+}
+
+.btn-icon {
+    font-size: 2rem;
+}
+
+.btn-label {
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.btn-time {
+    font-family: 'Inter', monospace;
+    font-size: 0.75rem;
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+/* Custom Alarm */
+.custom-alarm-inputs {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.time-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.time-input-group label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.time-select {
+    padding: 0.75rem 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    color: var(--text-primary);
+    font-family: 'Inter', monospace;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 80px;
+}
+
+.time-select:hover {
+    background: rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.time-select:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+}
+
+.time-select option {
+    background: rgba(15, 23, 42, 0.95);
+    color: var(--text-primary);
+    padding: 0.5rem;
+    font-weight: 600;
+}
+
+.time-select option:hover,
+.time-select option:checked {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(59, 130, 246, 0.3));
+    color: var(--accent-color);
+}
+
+.time-separator {
+    font-size: 2rem;
+    color: var(--accent-color);
+    font-weight: 700;
+    padding-bottom: 0.5rem;
+    font-family: 'Inter', monospace;
+}
+
+.set-alarm-btn {
+    padding: 0.75rem 2rem;
+    background: linear-gradient(135deg, var(--accent-color), #3b82f6);
+    border: none;
+    border-radius: 0.75rem;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+    font-family: 'Outfit', sans-serif;
+}
+
+.set-alarm-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
+}
+
+.set-alarm-btn:active {
+    transform: translateY(0);
+}
+
+/* Active Alarms */
+.alarms-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.no-alarms {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 2rem;
+    font-style: italic;
+}
+
+.alarm-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.alarm-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.alarm-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.alarm-icon {
+    font-size: 1.5rem;
+}
+
+.alarm-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.alarm-time {
+    font-family: 'Inter', monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent-color);
+}
+
+.alarm-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.alarm-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.delete-alarm-btn {
+    padding: 0.5rem 1rem;
+    background: rgba(244, 63, 94, 0.2);
+    border: 1px solid rgba(244, 63, 94, 0.3);
+    border-radius: 0.5rem;
+    color: #f43f5e;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.delete-alarm-btn:hover {
+    background: rgba(244, 63, 94, 0.3);
+    border-color: rgba(244, 63, 94, 0.5);
+    transform: scale(1.05);
+}
