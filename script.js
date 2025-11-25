@@ -1,114 +1,152 @@
 // Configuration
-const SESSIONS = {
+// Configuration
+// Base UTC start times (Standard Time / Winter Time)
+const SESSION_CONFIG = {
   sydney: {
     name: "Sydney",
-    start: 22, // 10 PM UTC (Winter) - simplified for standard forex hours
-    end: 7, // 7 AM UTC
+    standardStart: 22, // 10 PM UTC (Winter)
+    duration: 9,
     timezone: "Australia/Sydney",
     elementId: "sydney",
+    dstRegion: "australia", // DST: Oct - Apr
   },
   tokyo: {
     name: "Tokyo",
-    start: 0, // 12 AM UTC
-    end: 9, // 9 AM UTC
+    standardStart: 0, // 12 AM UTC
+    duration: 9,
     timezone: "Asia/Tokyo",
     elementId: "tokyo",
+    dstRegion: "none", // No DST
   },
   london: {
     name: "London",
-    start: 8, // 8 AM UTC
-    end: 17, // 5 PM UTC
+    standardStart: 8, // 8 AM UTC
+    duration: 9,
     timezone: "Europe/London",
     elementId: "london",
+    dstRegion: "europe", // DST: Mar - Oct
   },
   newyork: {
     name: "New York",
-    start: 13, // 1 PM UTC
-    end: 22, // 10 PM UTC
+    standardStart: 13, // 1 PM UTC
+    duration: 9,
     timezone: "America/New_York",
     elementId: "newyork",
+    dstRegion: "usa", // DST: Mar - Nov
   },
 };
 
 // Market Assets Configuration with Trading Hours
-const MARKET_ASSETS = {
-  sydney: {
-    location: "Sydney",
-    timezone: "Australia/Sydney",
-    openUTC: 23, // 11:00 PM UTC (previous day) - ASX opens 10:00 AM AEST
-    closeUTC: 5, // 5:00 AM UTC - ASX closes 4:00 PM AEST
-    assets: [
-      { symbol: "ASX 200", name: "S&P/ASX 200 Index", type: "index" },
-      { symbol: "BHP", name: "BHP Group", type: "stock" },
-      { symbol: "CBA", name: "Commonwealth Bank", type: "stock" },
-      { symbol: "CSL", name: "CSL Limited", type: "stock" },
-    ],
-  },
+// Ordered by IST opening time: Tokyo (5:30 AM) → Hong Kong (7:00 AM) → India (9:15 AM) → Euronext (1:30 PM) → London (1:30 PM) → New York (8:00 PM IST)
+// Each exchange shows top 4 highest-volume assets
+const MARKET_ASSETS_CONFIG = {
   tokyo: {
-    location: "Tokyo",
+    location: "TSE (Tokyo)",
+    exchangeName: "Tokyo Stock Exchange",
     timezone: "Asia/Tokyo",
-    openUTC: 0, // 12:00 AM UTC - TSE opens 9:00 AM JST
-    closeUTC: 6, // 6:00 AM UTC - TSE closes 3:00 PM JST
+    standardOpenUTC: 0, // 12:00 AM UTC = 9:00 AM JST = 5:30 AM IST
+    duration: 6, // 9:00 AM - 3:00 PM JST
+    dstRegion: "none",
     assets: [
-      { symbol: "NIKKEI", name: "Nikkei 225 Index", type: "index" },
+      { symbol: "NIKKEI 225", name: "Nikkei 225 Index", type: "index" },
       { symbol: "TOPIX", name: "Tokyo Stock Price Index", type: "index" },
-      { symbol: "TSE:7203", name: "Toyota Motor Corp", type: "stock" },
-      { symbol: "TSE:6758", name: "Sony Group Corp", type: "stock" },
-      { symbol: "TSE:9984", name: "SoftBank Group", type: "stock" },
+      { symbol: "7203", name: "Toyota Motor", type: "stock" },
+      { symbol: "6758", name: "Sony Group", type: "stock" },
     ],
   },
-  london: {
-    location: "London",
-    timezone: "Europe/London",
-    openUTC: 8, // 8:00 AM UTC - LSE opens 8:00 AM GMT
-    closeUTC: 16.5, // 4:30 PM UTC - LSE closes 4:30 PM GMT
+  hongkong: {
+    location: "HKEX (Hong Kong)",
+    exchangeName: "Hong Kong Stock Exchange",
+    timezone: "Asia/Hong_Kong",
+    standardOpenUTC: 1.5, // 1:30 AM UTC = 9:30 AM HKT = 7:00 AM IST
+    duration: 6.5, // 9:30 AM - 4:00 PM HKT (simplified, no lunch break)
+    dstRegion: "none",
     assets: [
-      { symbol: "FTSE", name: "FTSE 100 Index", type: "index" },
-      { symbol: "DAX", name: "DAX Index (Germany)", type: "index" },
-      { symbol: "CAC", name: "CAC 40 (France)", type: "index" },
-      { symbol: "HSBA", name: "HSBC Holdings", type: "stock" },
-      { symbol: "BP", name: "BP plc", type: "stock" },
-      { symbol: "SHEL", name: "Shell plc", type: "stock" },
-    ],
-  },
-  newyork: {
-    location: "New York",
-    timezone: "America/New_York",
-    openUTC: 14.5, // 2:30 PM UTC - NYSE opens 9:30 AM EST
-    closeUTC: 21, // 9:00 PM UTC - NYSE closes 4:00 PM EST
-    assets: [
-      { symbol: "SPX", name: "S&P 500 Index", type: "index" },
-      { symbol: "IXIC", name: "NASDAQ Composite", type: "index" },
-      { symbol: "DJI", name: "Dow Jones Industrial", type: "index" },
-      { symbol: "AAPL", name: "Apple Inc", type: "stock" },
-      { symbol: "MSFT", name: "Microsoft Corp", type: "stock" },
-      { symbol: "TSLA", name: "Tesla Inc", type: "stock" },
+      { symbol: "HSI", name: "Hang Seng Index", type: "index" },
+      { symbol: "0700", name: "Tencent Holdings", type: "stock" },
+      { symbol: "9988", name: "Alibaba Group", type: "stock" },
+      { symbol: "0941", name: "China Mobile", type: "stock" },
     ],
   },
   india: {
-    location: "India",
+    location: "NSE/BSE (India)",
+    exchangeName: "National Stock Exchange / Bombay Stock Exchange",
     timezone: "Asia/Kolkata",
-    openUTC: 3.75, // 3:45 AM UTC - NSE opens 9:15 AM IST
-    closeUTC: 10, // 10:00 AM UTC - NSE closes 3:30 PM IST
+    standardOpenUTC: 3.75, // 3:45 AM UTC = 9:15 AM IST
+    duration: 6.25, // 9:15 AM - 3:30 PM IST
+    dstRegion: "none",
     assets: [
-      { symbol: "NIFTY", name: "NIFTY 50 Index", type: "index" },
-      { symbol: "SENSEX", name: "BSE SENSEX Index", type: "index" },
+      { symbol: "NIFTY 50", name: "NIFTY 50 Index", type: "index" },
+      { symbol: "NIFTY BANK", name: "NIFTY Bank Index", type: "index" },
       { symbol: "RELIANCE", name: "Reliance Industries", type: "stock" },
-      { symbol: "TCS", name: "Tata Consultancy Services", type: "stock" },
       { symbol: "HDFCBANK", name: "HDFC Bank", type: "stock" },
-      { symbol: "INFY", name: "Infosys Limited", type: "stock" },
+    ],
+  },
+  euronext: {
+    location: "Euronext (Paris/Amsterdam)",
+    exchangeName: "Euronext Exchange",
+    timezone: "Europe/Paris",
+    standardOpenUTC: 8, // 8:00 AM UTC = 9:00 AM CET = 1:30 PM IST
+    duration: 8.5, // 9:00 AM - 5:30 PM CET
+    dstRegion: "europe",
+    assets: [
+      { symbol: "CAC 40", name: "CAC 40 Index (France)", type: "index" },
+      { symbol: "MC.PA", name: "LVMH (Luxury)", type: "stock" },
+      { symbol: "ASML", name: "ASML Holding", type: "stock" },
+      { symbol: "OR.PA", name: "L'Oréal", type: "stock" },
+    ],
+  },
+  london: {
+    location: "LSE (London)",
+    exchangeName: "London Stock Exchange",
+    timezone: "Europe/London",
+    standardOpenUTC: 8, // 8:00 AM UTC = 8:00 AM GMT = 1:30 PM IST
+    duration: 8.5, // 8:00 AM - 4:30 PM GMT
+    dstRegion: "europe",
+    assets: [
+      { symbol: "FTSE 100", name: "FTSE 100 Index", type: "index" },
+      { symbol: "SHEL", name: "Shell plc", type: "stock" },
+      { symbol: "HSBA", name: "HSBC Holdings", type: "stock" },
+      { symbol: "BP", name: "BP plc", type: "stock" },
+    ],
+  },
+  newyork: {
+    location: "NYSE/NASDAQ (New York)",
+    exchangeName: "New York Stock Exchange / NASDAQ",
+    timezone: "America/New_York",
+    standardOpenUTC: 14.5, // 2:30 PM UTC = 9:30 AM EST = 8:00 PM IST
+    duration: 6.5, // 9:30 AM - 4:00 PM EST
+    dstRegion: "usa",
+    assets: [
+      { symbol: "SPY", name: "S&P 500 ETF (Highest Volume)", type: "stock" },
+      { symbol: "TSLA", name: "Tesla Inc", type: "stock" },
+      { symbol: "AAPL", name: "Apple Inc", type: "stock" },
+      { symbol: "NVDA", name: "Nvidia Corp", type: "stock" },
     ],
   },
 };
+
+// Dynamic State
+let SESSIONS = {};
+let MARKET_ASSETS = {};
 
 // State
 let isUTC = false; // Default to IST as per request "switch all time to either IST or UTC"
 
 // DOM Elements
 const toggleSwitch = document.getElementById("timezone-toggle");
-const marketStatusDot = document.querySelector(".status-dot");
-const marketStatusText = document.querySelector(".status-text");
-const activeSessionsText = document.getElementById("active-sessions");
+const forexStatusDot = document.querySelector("#forex-status .status-dot");
+const forexStatusText = document.querySelector("#forex-status .status-text");
+const activeForexSessionsText = document.getElementById(
+  "active-forex-sessions"
+);
+const exchangeStatusDot = document.querySelector(
+  "#exchange-status .status-dot"
+);
+const exchangeStatusText = document.querySelector(
+  "#exchange-status .status-text"
+);
+const activeExchangesText = document.getElementById("active-exchanges");
 
 // Initialize
 document.addEventListener("DOMContentLoaded", () => {
@@ -121,9 +159,20 @@ document.addEventListener("DOMContentLoaded", () => {
     updateAll();
   });
 
+  // Request notification permission for alarms
+  if ("Notification" in window && Notification.permission === "default") {
+    Notification.requestPermission();
+  }
+
+  // Calculate Session Times based on DST
+  recalculateSessionTimes();
+
   // Handle tab visibility changes to prevent clock jump on refocus
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden) {
+      // Recalculate times in case date changed while hidden
+      recalculateSessionTimes();
+
       // Tab just became visible again
       // Temporarily disable transitions
       disableClockTransitions();
@@ -147,9 +196,133 @@ document.addEventListener("DOMContentLoaded", () => {
   // Generate market assets cards
   generateAssetsGrid();
 
-  setInterval(updateAll, 1000);
+  setInterval(() => {
+    // Check if we need to recalculate DST (e.g. new day)
+    const now = new Date();
+    if (now.getMinutes() === 0 && now.getSeconds() === 0) {
+      recalculateSessionTimes();
+    }
+    updateAll();
+  }, 1000);
   updateAll(); // Initial call
 });
+
+// ==================== DST LOGIC ====================
+
+function isDST(date, region) {
+  const year = date.getUTCFullYear();
+
+  // Helper to find Nth Sunday in Month
+  const getNthSunday = (n, month) => {
+    const d = new Date(Date.UTC(year, month, 1));
+    const day = d.getUTCDay();
+    const diff = day === 0 ? 0 : 7 - day;
+    const firstSunday = d.getUTCDate() + diff;
+    return new Date(Date.UTC(year, month, firstSunday + (n - 1) * 7));
+  };
+
+  // Helper to find Last Sunday in Month
+  const getLastSunday = (month) => {
+    const d = new Date(Date.UTC(year, month + 1, 0));
+    const day = d.getUTCDay();
+    return new Date(Date.UTC(year, month, d.getUTCDate() - day));
+  };
+
+  if (region === "usa") {
+    // USA: 2nd Sunday Mar to 1st Sunday Nov
+    const start = getNthSunday(2, 2); // Mar (0-indexed = 2)
+    const end = getNthSunday(1, 10); // Nov
+    return date >= start && date < end;
+  } else if (region === "europe") {
+    // Europe: Last Sunday Mar to Last Sunday Oct
+    const start = getLastSunday(2); // Mar
+    const end = getLastSunday(9); // Oct
+    return date >= start && date < end;
+  } else if (region === "australia") {
+    // Australia: 1st Sunday Oct to 1st Sunday Apr
+    // Note: Crosses year boundary. DST is ON at start of year.
+    const start = getNthSunday(1, 9); // Oct
+    const end = getNthSunday(1, 3); // Apr
+    // DST is active if we are AFTER start OR BEFORE end
+    return date >= start || date < end;
+  }
+
+  return false;
+}
+
+function recalculateSessionTimes() {
+  const now = new Date();
+
+  // 1. Update SESSIONS
+  SESSIONS = {};
+  Object.entries(SESSION_CONFIG).forEach(([key, config]) => {
+    let start = config.standardStart;
+    const isDstActive = isDST(now, config.dstRegion);
+
+    // Adjust for DST
+    // USA/Europe: Clocks go forward in Summer (UTC offset decreases, so UTC start time decreases)
+    // Example: NY Standard (UTC-5) 9am = 14:00 UTC. NY DST (UTC-4) 9am = 13:00 UTC.
+    // So if DST, subtract 1 hour from UTC start.
+    if (config.dstRegion === "usa" || config.dstRegion === "europe") {
+      if (isDstActive) start -= 1;
+    }
+
+    // Australia: Clocks go forward in Summer (UTC offset increases, so UTC start time decreases)
+    // Example: Sydney Standard (UTC+10) 7am = 21:00 UTC (prev day).
+    // Sydney DST (UTC+11) 7am = 20:00 UTC (prev day).
+    // Wait, let's check the offset direction.
+    // Sydney Standard = UTC+10. 10pm UTC = 8am Sydney.
+    // Sydney DST = UTC+11. 9pm UTC = 8am Sydney.
+    // So yes, subtract 1 hour from UTC start.
+    if (config.dstRegion === "australia") {
+      if (isDstActive) start -= 1;
+    }
+
+    // Normalize start (handle negative or > 24)
+    if (start < 0) start += 24;
+    if (start >= 24) start -= 24;
+
+    let end = start + config.duration;
+    // We don't normalize end here because the logic handles start < end vs start > end
+
+    SESSIONS[key] = {
+      ...config,
+      start: start,
+      end: end,
+    };
+  });
+
+  // 2. Update MARKET_ASSETS
+  MARKET_ASSETS = {};
+  Object.entries(MARKET_ASSETS_CONFIG).forEach(([key, config]) => {
+    let open = config.standardOpenUTC;
+    const isDstActive = isDST(now, config.dstRegion);
+
+    if (
+      isDstActive &&
+      (config.dstRegion === "usa" ||
+        config.dstRegion === "europe" ||
+        config.dstRegion === "australia")
+    ) {
+      open -= 1;
+    }
+
+    // Normalize open
+    if (open < 0) open += 24;
+    if (open >= 24) open -= 24;
+
+    let close = open + config.duration;
+
+    MARKET_ASSETS[key] = {
+      ...config,
+      openUTC: open,
+      closeUTC: close,
+    };
+  });
+
+  // Update Alarms based on new times
+  updateSessionButtonTimes();
+}
 
 // Disable clock hand transitions
 function disableClockTransitions() {
@@ -504,17 +677,23 @@ function checkMarketStatus(now) {
       openStr = fmt.format(nextOpenUTC) + " IST";
     }
 
-    activeSessionsText.textContent = `Opens ${openStr}`;
+    activeForexSessionsText.textContent = `Opens ${openStr}`;
 
     // Dim all sessions
     document.querySelectorAll(".session-card").forEach((card) => {
       card.classList.remove("active");
     });
+
+    // Stock exchanges are also closed on weekends
+    exchangeStatusText.textContent = "Weekend - Closed";
+    exchangeStatusDot.className = "status-dot closed";
+    activeExchangesText.textContent = "Exchanges open Monday";
     return;
   }
 
-  marketStatusText.textContent = "Market Open";
-  marketStatusDot.className = "status-dot active";
+  // =================FOREX SESSIONS STATUS=================
+  forexStatusText.textContent = "Market Open";
+  forexStatusDot.className = "status-dot active";
 
   // Check Active Sessions
   const activeSessions = [];
@@ -545,9 +724,58 @@ function checkMarketStatus(now) {
   });
 
   if (activeSessions.length > 0) {
-    activeSessionsText.textContent = `Active: ${activeSessions.join(", ")}`;
+    activeForexSessionsText.textContent = `Active: ${activeSessions.join(
+      ", "
+    )}`;
   } else {
-    activeSessionsText.textContent = "No Major Sessions Active"; // Gap time
+    activeForexSessionsText.textContent = "No Major Sessions Active"; // Gap time
+  }
+
+  // =================STOCK EXCHANGES STATUS=================
+  checkExchangeStatus(now);
+}
+
+function checkExchangeStatus(now) {
+  const day = now.getUTCDay();
+  const hour = now.getUTCHours();
+  const minute = now.getUTCMinutes();
+  const currentTimeUTC = hour + minute / 60;
+
+  // Check if weekend
+  let isWeekend = false;
+  if (day === 6 || (day === 5 && hour >= 22) || (day === 0 && hour < 22)) {
+    isWeekend = true;
+    exchangeStatusText.textContent = "Weekend - Closed";
+    exchangeStatusDot.className = "status-dot closed";
+    activeExchangesText.textContent = "Exchanges open Monday";
+    return;
+  }
+
+  const activeExchanges = [];
+
+  Object.entries(MARKET_ASSETS).forEach(([key, market]) => {
+    let isOpen = false;
+    if (market.openUTC < market.closeUTC) {
+      isOpen =
+        currentTimeUTC >= market.openUTC && currentTimeUTC < market.closeUTC;
+    } else {
+      isOpen =
+        currentTimeUTC >= market.openUTC || currentTimeUTC < market.closeUTC;
+    }
+
+    if (isOpen) {
+      activeExchanges.push(market.location.split(" ")[0]); // Get short name
+    }
+  });
+
+  if (activeExchanges.length > 0) {
+    exchangeStatusText.textContent = "Markets Open";
+    exchangeStatusDot.className = "status-dot active";
+    activeExchangesText.textContent = `Open: ${activeExchanges.join(", ")}`;
+  } else {
+    exchangeStatusText.textContent = "All Closed";
+    exchangeStatusDot.className = "status-dot closed";
+    activeExchangesText.textContent = "No exchanges trading now";
   }
 }
 
@@ -654,14 +882,59 @@ function convertUTCtoTimezone(utcHours, timezone) {
   return formatter.format(utcDate);
 }
 
+// ==================== CUSTOM NOTIFICATION SYSTEM ====================
+
+function createNotificationContainer() {
+  if (!document.getElementById("notification-container")) {
+    const container = document.createElement("div");
+    container.id = "notification-container";
+    container.className = "notification-container";
+    document.body.appendChild(container);
+  }
+}
+
+function showNotification(message, type = "info") {
+  const container =
+    document.getElementById("notification-container") ||
+    createNotificationContainer();
+
+  const notification = document.createElement("div");
+  notification.className = `notification notification-${type}`;
+
+  const iconMap = {
+    success: "✅",
+    error: "❌",
+    warning: "⚠️",
+    info: "ℹ️",
+  };
+
+  notification.innerHTML = `
+    <span class="notification-icon">${iconMap[type] || iconMap.info}</span>
+    <span class="notification-message">${message}</span>
+    <button class="notification-close" onclick="this.parentElement.remove()">×</button>
+  `;
+
+  container.appendChild(notification);
+
+  // Add entrance animation
+  setTimeout(() => notification.classList.add("show"), 10);
+
+  // Auto-dismiss after 4 seconds
+  setTimeout(() => {
+    notification.classList.remove("show");
+    setTimeout(() => notification.remove(), 300);
+  }, 4000);
+}
+
 // ==================== ALARM FEATURE ====================
 
 const SESSION_OPEN_TIMES = {
-  sydney: { utc: 22, label: "Sydney Open" },
-  tokyo: { utc: 0, label: "Tokyo Open" },
-  london: { utc: 8, label: "London Open" },
-  newyork: { utc: 14.5, label: "New York Open" },
-  india: { utc: 3.75, label: "India Market Open" },
+  tokyo: { utc: 0, label: "Tokyo (TSE) Open", region: "none" },
+  hongkong: { utc: 1.5, label: "Hong Kong (HKEX) Open", region: "none" },
+  india: { utc: 3.75, label: "India (NSE/BSE) Open", region: "none" },
+  euronext: { utc: 8, label: "Euronext (Paris) Open", region: "europe" },
+  london: { utc: 8, label: "London (LSE) Open", region: "europe" },
+  newyork: { utc: 14.5, label: "New York (NYSE) Open", region: "usa" },
 };
 
 let alarms = [];
@@ -711,9 +984,19 @@ function initializeAlarmUI() {
 }
 
 function updateSessionButtonTimes() {
+  const now = new Date();
   Object.keys(SESSION_OPEN_TIMES).forEach((session) => {
     const timeEl = document.getElementById(`${session}-time`);
-    const { utc, label } = SESSION_OPEN_TIMES[session];
+    const config = SESSION_OPEN_TIMES[session];
+
+    let utc = config.utc;
+    const isDstActive = isDST(now, config.region);
+
+    if (isDstActive && config.region !== "none") {
+      utc -= 1;
+    }
+
+    if (utc < 0) utc += 24;
 
     // Convert UTC to IST (add 5.5 hours)
     const istHours = utc + 5.5;
@@ -729,16 +1012,25 @@ function updateSessionButtonTimes() {
 }
 
 function setSessionAlarm(session) {
-  const { utc, label } = SESSION_OPEN_TIMES[session];
+  const config = SESSION_OPEN_TIMES[session];
+  const now = new Date();
+
+  let utc = config.utc;
+  const isDstActive = isDST(now, config.region);
+
+  if (isDstActive && config.region !== "none") {
+    utc -= 1;
+  }
+
+  if (utc < 0) utc += 24;
 
   // Calculate next occurrence
-  const now = new Date();
   const alarmTime = calculateNextSessionTime(utc);
 
   const alarm = {
     id: Date.now(),
     time: alarmTime,
-    label: label,
+    label: config.label,
     type: "session",
     session: session,
   };
@@ -803,6 +1095,18 @@ function setCustomAlarm() {
 }
 
 function addAlarm(alarm) {
+  // Check for duplicate alarms (same time)
+  const isDuplicate = alarms.some((existingAlarm) => {
+    const existingTime = new Date(existingAlarm.time).getTime();
+    const newTime = new Date(alarm.time).getTime();
+    return existingTime === newTime;
+  });
+
+  if (isDuplicate) {
+    showNotification("An alarm is already set for this time!", "warning");
+    return;
+  }
+
   alarms.push(alarm);
   saveAlarmsToStorage();
   renderAlarms();
@@ -826,6 +1130,12 @@ function deleteAlarm(alarmId) {
 
 function renderAlarms() {
   const alarmsList = document.getElementById("alarms-list");
+  const activeAlarmsHeader = document.querySelector(".active-alarms h3");
+
+  // Update header with count
+  if (activeAlarmsHeader) {
+    activeAlarmsHeader.textContent = `Active Alarms (${alarms.length})`;
+  }
 
   if (alarms.length === 0) {
     alarmsList.innerHTML = '<p class="no-alarms">No active alarms</p>';
@@ -904,12 +1214,14 @@ function triggerAlarm(alarm) {
   // Play repeating alarm sound
   playAlarmSound();
 
-  // Show notification
+  // Show browser notification
   if ("Notification" in window && Notification.permission === "granted") {
-    new Notification("🔔 Forex Session Alarm", {
-      body: alarm.label,
-      icon: "⏰",
+    new Notification("🔔 Global Market Hours - Alarm!", {
+      body: `${alarm.label} - Market is opening now!`,
+      icon: "favicon-96x96.png",
+      badge: "favicon-96x96.png",
       requireInteraction: true,
+      tag: "market-alarm",
     });
   }
 }

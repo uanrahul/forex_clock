@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Forex Sessions</title>
+    <title>Global Market Hours - Live Forex & Stock Trading Sessions</title>
     <!-- ✅ Fixed Favicon Paths (relative, no leading slashes) -->
     <link rel="icon" href="favicon.ico" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
@@ -36,7 +36,7 @@
     <meta name="msapplication-navbutton-color" content="#0e0e0e" />
 
     <!-- Optional but clean -->
-    <meta name="application-name" content="Forex Clock" />
+    <meta name="application-name" content="Global Market Hours" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -52,7 +52,7 @@
     <div class="app-container">
       <header>
         <div class="header-content">
-          <h1>Forex Sessions</h1>
+          <h1>Global Market Hours</h1>
           <div class="toggle-container">
             <input
               type="checkbox"
@@ -72,12 +72,33 @@
         <section class="status-section">
           <div class="status-card glass-panel">
             <h2>Current Market Status</h2>
-            <div id="market-status" class="status-indicator">
-              <span class="status-dot"></span>
-              <span class="status-text">Loading...</span>
-            </div>
-            <div id="active-sessions" class="active-sessions-text">
-              <!-- Active sessions will be listed here -->
+
+            <div class="status-subsections-container">
+              <!-- Forex Sessions Subsection -->
+              <div class="status-subsection">
+                <h3>💱 Forex Sessions</h3>
+                <div id="forex-status" class="status-indicator">
+                  <span class="status-dot"></span>
+                  <span class="status-text">Loading...</span>
+                </div>
+                <div id="active-forex-sessions" class="active-sessions-text">
+                  <!-- Active forex sessions will be listed here -->
+                </div>
+              </div>
+
+              <div class="status-divider"></div>
+
+              <!-- Stock Exchanges Subsection -->
+              <div class="status-subsection">
+                <h3>📈 Stock Exchanges</h3>
+                <div id="exchange-status" class="status-indicator">
+                  <span class="status-dot"></span>
+                  <span class="status-text">Loading...</span>
+                </div>
+                <div id="active-exchanges" class="active-sessions-text">
+                  <!-- Active exchanges will be listed here -->
+                </div>
+              </div>
             </div>
           </div>
 
@@ -174,9 +195,10 @@
         <!-- Market Assets Section -->
         <section class="assets-section">
           <div class="section-header">
-            <h2>Market Assets & Trading Hours</h2>
+            <h2>Global Stock Exchanges</h2>
             <p class="section-subtitle">
-              High-volume assets from major global markets
+              Live trading hours and top-traded assets from the world's major
+              markets
             </p>
           </div>
 
@@ -195,60 +217,67 @@
               </p>
             </div>
 
-            <!-- Quick Session Buttons -->
-            <div class="quick-alarms">
-              <h3>Quick Session Alarms</h3>
-              <div class="session-buttons">
-                <button class="session-alarm-btn" data-session="sydney">
-                  <span class="btn-label">Sydney</span>
-                  <span class="btn-time" id="sydney-time">--:-- IST</span>
-                </button>
-                <button class="session-alarm-btn" data-session="tokyo">
-                  <span class="btn-label">Tokyo</span>
-                  <span class="btn-time" id="tokyo-time">--:-- IST</span>
-                </button>
-                <button class="session-alarm-btn" data-session="london">
-                  <span class="btn-label">London</span>
-                  <span class="btn-time" id="london-time">--:-- IST</span>
-                </button>
-                <button class="session-alarm-btn" data-session="newyork">
-                  <span class="btn-label">New York</span>
-                  <span class="btn-time" id="newyork-time">--:-- IST</span>
-                </button>
-                <button class="session-alarm-btn" data-session="india">
-                  <span class="btn-label">India</span>
-                  <span class="btn-time" id="india-time">--:-- IST</span>
-                </button>
+            <!-- Alarm Content: 2-Column Flex Layout -->
+            <div class="alarm-content-grid">
+              <!-- LEFT COLUMN: Custom Alarm -->
+              <div class="custom-alarm">
+                <h3>Custom Alarm</h3>
+                <div class="custom-alarm-inputs">
+                  <div class="time-input-group">
+                    <label for="alarm-hour">Hour</label>
+                    <select id="alarm-hour" class="time-select">
+                      <option value="">--</option>
+                    </select>
+                  </div>
+                  <div class="time-separator">:</div>
+                  <div class="time-input-group">
+                    <label for="alarm-minute">Minute</label>
+                    <select id="alarm-minute" class="time-select">
+                      <option value="">--</option>
+                    </select>
+                  </div>
+                  <div class="time-input-group">
+                    <label for="alarm-period">Period</label>
+                    <select id="alarm-period" class="time-select">
+                      <option value="AM">AM</option>
+                      <option value="PM">PM</option>
+                    </select>
+                  </div>
+                  <button id="set-custom-alarm" class="set-alarm-btn">
+                    <span>Set Alarm</span>
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <!-- Custom Alarm -->
-            <div class="custom-alarm">
-              <h3>Custom Alarm</h3>
-              <div class="custom-alarm-inputs">
-                <div class="time-input-group">
-                  <label for="alarm-hour">Hour</label>
-                  <select id="alarm-hour" class="time-select">
-                    <option value="">--</option>
-                  </select>
+              <!-- RIGHT COLUMN: Quick Session Alarms -->
+              <div class="quick-alarms">
+                <h3>Quick Session Alarms</h3>
+                <div class="session-buttons">
+                  <button class="session-alarm-btn" data-session="tokyo">
+                    <span class="btn-label">Tokyo (TSE)</span>
+                    <span class="btn-time" id="tokyo-time">--:-- IST</span>
+                  </button>
+                  <button class="session-alarm-btn" data-session="hongkong">
+                    <span class="btn-label">Hong Kong (HKEX)</span>
+                    <span class="btn-time" id="hongkong-time">--:-- IST</span>
+                  </button>
+                  <button class="session-alarm-btn" data-session="india">
+                    <span class="btn-label">India (NSE/BSE)</span>
+                    <span class="btn-time" id="india-time">--:-- IST</span>
+                  </button>
+                  <button class="session-alarm-btn" data-session="euronext">
+                    <span class="btn-label">Euronext (Paris)</span>
+                    <span class="btn-time" id="euronext-time">--:-- IST</span>
+                  </button>
+                  <button class="session-alarm-btn" data-session="london">
+                    <span class="btn-label">London (LSE)</span>
+                    <span class="btn-time" id="london-time">--:-- IST</span>
+                  </button>
+                  <button class="session-alarm-btn" data-session="newyork">
+                    <span class="btn-label">New York (NYSE)</span>
+                    <span class="btn-time" id="newyork-time">--:-- IST</span>
+                  </button>
                 </div>
-                <div class="time-separator">:</div>
-                <div class="time-input-group">
-                  <label for="alarm-minute">Minute</label>
-                  <select id="alarm-minute" class="time-select">
-                    <option value="">--</option>
-                  </select>
-                </div>
-                <div class="time-input-group">
-                  <label for="alarm-period">Period</label>
-                  <select id="alarm-period" class="time-select">
-                    <option value="AM">AM</option>
-                    <option value="PM">PM</option>
-                  </select>
-                </div>
-                <button id="set-custom-alarm" class="set-alarm-btn">
-                  <span>Set Alarm</span>
-                </button>
               </div>
             </div>
 
